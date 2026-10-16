@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>11-B Davomat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --g:#12214a;--g2:#2447c9;--g3:#38bdf8;--glow:56,160,248;--bg:#f2f5fc;--line:#e0e6f3;--muted:#64708a;--ok:#16a34a;--ease:cubic-bezier(.22,.8,.3,1)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;color:#14203b;min-height:100vh;
+      font-family:'Inter',Arial,Helvetica,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      background:
+        radial-gradient(650px 420px at 10% 15%,rgba(var(--glow),.20),transparent 60%),
+        radial-gradient(700px 500px at 92% 88%,rgba(124,92,255,.16),transparent 60%),
+        radial-gradient(500px 380px at 88% 8%,rgba(34,211,238,.14),transparent 60%),
+        var(--bg);
+      background-attachment:fixed;
+    }
+    header{
+      position:sticky;top:0;z-index:30;color:#fff;padding:16px;
+      background:linear-gradient(120deg,#0a1431 0%,#12214a 45%,#1e3a95 100%);
+      box-shadow:0 10px 32px rgba(18,33,74,.35);
+      overflow:hidden;
+    }
+    header::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px 130px at 18% -30%,rgba(255,255,255,.16),transparent 70%),radial-gradient(300px 120px at 90% 130%,rgba(var(--glow),.35),transparent 70%)}
+    header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,rgba(56,189,248,1),rgba(124,92,255,.9),transparent);background-size:200% 100%;animation:lineMove 4s linear infinite}
+    @keyframes lineMove{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .head,main{max-width:1050px;margin:auto}
+    .head{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo,.avatar{display:grid;place-items:center;font-weight:800;border-radius:14px}
+    .logo{width:46px;height:46px;color:#fff;font-size:15px;letter-spacing:.5px;background:linear-gradient(145deg,#3b82f6,#7c5cff);box-shadow:0 0 0 1px rgba(255,255,255,.35),0 6px 22px rgba(var(--glow),.55);animation:logoGlow 3s ease-in-out infinite}
+    @keyframes logoGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.3),0 4px 14px rgba(var(--glow),.4)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.55),0 6px 30px rgba(var(--glow),.85)}}
+    h1{font-size:23px;margin:0 0 4px;letter-spacing:-.3px;font-weight:800}
+    header p{margin:0;color:#b9c8ee;font-size:13px}
+    #headDate{font-size:12px;color:#dbe6ff;padding:7px 14px;border-radius:30px;font-weight:600;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+    main{padding:28px 14px 40px}
+    .panel{position:relative;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.95);border-radius:22px;padding:24px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 22px 55px rgba(18,33,74,.12),0 2px 6px rgba(18,33,74,.05);animation:rise .6s var(--ease) both}
+    @keyframes rise{from{opacity:0;transform:translateY(26px) scale(.98)}to{opacity:1;transform:none}}
+    section:not(.hidden){animation:rise .55s var(--ease) both}
+    .panel{animation:none}
+    .login{max-width:440px;margin:15px auto}
+    .login::before{content:"";position:absolute;inset:-1px;border-radius:23px;padding:1.5px;pointer-events:none;background:linear-gradient(140deg,rgba(var(--glow),.7),transparent 40%,transparent 60%,rgba(124,92,255,.5));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+    .eyebrow{font-size:12px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;background:linear-gradient(90deg,var(--g2),#7c5cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    h2{margin:7px 0 8px;font-size:26px;letter-spacing:-.4px;font-weight:800;color:var(--g)}
+    .sub,.muted{color:var(--muted);font-size:13px;line-height:1.55}.sub{margin:0 0 18px}
+    label{display:block;font-size:13px;font-weight:600;margin:14px 0 7px;color:#26365c}
+    input,select{width:100%;padding:13px 14px;font-size:15px;font-family:inherit;color:#14203b;border:1.5px solid #d5def0;border-radius:13px;background:#fafbff;transition:border-color .25s,box-shadow .25s,transform .25s,background .25s}
+    input::placeholder{color:#9aa6c2}input:hover,select:hover{border-color:#a9baea}input:focus,select:focus{outline:none;background:#fff;border-color:var(--g3);transform:translateY(-1px);box-shadow:0 0 0 4px rgba(var(--glow),.2),0 8px 24px rgba(var(--glow),.22)}
+    button{position:relative;overflow:hidden;isolation:isolate;border:0;border-radius:13px;padding:12px 18px;background:linear-gradient(135deg,#1b3a9a,#3b6cf0);color:#fff;font-weight:700;font-family:inherit;font-size:14px;cursor:pointer;box-shadow:0 6px 18px rgba(36,71,201,.32);transition:transform .25s var(--ease),box-shadow .3s,background .3s,filter .3s}
+    button::before{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;z-index:-1;pointer-events:none;background:linear-gradient(110deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);transition:left .7s var(--ease)}button:hover:not(:disabled){transform:translateY(-2px);background:linear-gradient(135deg,#2349bd,#4f83ff);box-shadow:0 0 0 1px rgba(var(--glow),.55),0 10px 30px rgba(var(--glow),.6),0 0 44px rgba(var(--glow),.4)}button:hover:not(:disabled)::before{left:140%}button:active:not(:disabled){transform:translateY(0) scale(.97);box-shadow:0 0 0 3px rgba(var(--glow),.4),0 4px 16px rgba(var(--glow),.5)}button:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(var(--glow),.45)}button:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.35);box-shadow:none}.secondary{background:linear-gradient(135deg,#eef2fd,#e0e8fb);color:var(--g);border:1px solid #d0dbf5;box-shadow:0 3px 10px rgba(18,33,74,.08)}.secondary:hover:not(:disabled){background:linear-gradient(135deg,#e6edfc,#d3e0fb);color:#0c1a40;box-shadow:0 0 0 1px rgba(var(--glow),.5),0 8px 26px rgba(var(--glow),.38)}.full{width:100%;margin-top:20px;padding:15px;font-size:15px}.ripple{position:absolute;border-radius:50%;pointer-events:none;z-index:-1;background:rgba(255,255,255,.55);transform:scale(0);animation:ripple .65s ease-out forwards}.secondary .ripple{background:rgba(var(--glow),.35)}@keyframes ripple{to{transform:scale(4);opacity:0}}.hint,.notice{padding:13px 15px;border-radius:13px;font-size:12px;line-height:1.65;margin-top:14px;background:linear-gradient(135deg,#f3f6ff,#eaf0fd);color:#3a4f80;border:1px solid #dbe5fa}.error{background:linear-gradient(135deg,#fff3f4,#ffe8ea);color:#b0243a;border-color:#f6ccd2}.notice.error:not(.hidden){animation:shake .45s}@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}.hidden{display:none!important}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.welcome{display:flex;align-items:center;gap:12px}.avatar{width:50px;height:50px;color:#fff;font-size:17px;background:linear-gradient(145deg,#3b82f6,#7c5cff);box-shadow:0 8px 22px rgba(var(--glow),.45)}#student .welcome h2,#teacher .welcome h2{font-size:22px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}.stat{position:relative;overflow:hidden;padding:16px 16px 16px 18px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 20px rgba(18,33,74,.07);transition:transform .3s var(--ease),box-shadow .3s,border-color .3s;animation:rise .6s var(--ease) both}.stat:nth-child(2){animation-delay:.08s}.stat:nth-child(3){animation-delay:.16s}.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--g3),#7c5cff)}.stat::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(var(--glow),.22),transparent 70%);transition:transform .4s var(--ease)}.stat:hover{transform:translateY(-4px);border-color:rgba(var(--glow),.65);box-shadow:0 16px 36px rgba(var(--glow),.3)}.stat:hover::after{transform:scale(1.6)}.stat span{display:block;color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.2px}.stat strong{display:block;color:var(--g);font-size:26px;margin-top:8px;font-weight:800;position:relative}.attend{position:relative;overflow:hidden;text-align:center;padding:32px 16px;background:linear-gradient(140deg,#f8faff,#e8efff);border:1px solid #d6e1fa;border-radius:22px}.attend::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;left:50%;top:-150px;transform:translateX(-50%);pointer-events:none;background:radial-gradient(circle,rgba(var(--glow),.26),transparent 70%)}.attend>div:first-child{position:relative;width:66px;height:66px;margin:0 auto;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#3b82f6,#7c5cff);color:#fff;box-shadow:0 0 0 9px rgba(var(--glow),.13),0 12px 30px rgba(var(--glow),.55);animation:floaty 3.5s ease-in-out infinite}@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}.attend h3{position:relative;font-size:22px;margin:16px 0 7px;font-weight:800;letter-spacing:-.3px;color:var(--g)}.attend p{position:relative;font-size:14px;line-height:1.55;color:var(--muted);max-width:450px;margin:8px auto 18px}.attend button{position:relative;min-width:230px;padding:16px;font-size:16px}.attend button:not(:disabled){animation:pulseGlow 2.4s ease-in-out infinite}@keyframes pulseGlow{0%,100%{box-shadow:0 6px 18px rgba(36,71,201,.32),0 0 0 0 rgba(var(--glow),.6)}50%{box-shadow:0 8px 26px rgba(var(--glow),.55),0 0 0 15px rgba(var(--glow),0)}}.location-status{position:relative;max-width:460px;margin:0 auto 14px;padding:11px 14px;border-radius:13px;background:#f1f5ff;color:#3a4f80;font-size:13px;line-height:1.5;border:1px solid #dbe5fa}.location-status.error{background:#fff1f2;color:#b0243a;border-color:#f6ccd2}.location-status.success{background:#e4f8ec;color:#15683a;border-color:#bfe8cf;box-shadow:0 0 24px rgba(34,197,94,.28)}.toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:18px 0}.toolbar>div{flex:1;min-width:145px}.toolbar button{height:46px}.tablewrap{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 8px 26px rgba(18,33,74,.07)}table{border-collapse:collapse;width:100%;min-width:610px;background:white}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid #eef1f8;font-size:13px}th{position:sticky;top:0;z-index:2;color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.8px;background:linear-gradient(135deg,#12214a,#1e3a95);border-bottom:0}tbody tr{transition:background .2s,box-shadow .2s;animation:rowIn .45s var(--ease) both}tbody tr:nth-child(1){animation-delay:.02s}tbody tr:nth-child(2){animation-delay:.05s}tbody tr:nth-child(3){animation-delay:.08s}tbody tr:nth-child(4){animation-delay:.11s}tbody tr:nth-child(5){animation-delay:.14s}tbody tr:nth-child(6){animation-delay:.17s}tbody tr:nth-child(7){animation-delay:.2s}tbody tr:nth-child(8){animation-delay:.23s}@keyframes rowIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}tbody tr:nth-child(even){background:#fafbff}tbody tr:hover{background:#eef3ff;box-shadow:inset 3px 0 0 var(--g3)}tr:last-child td{border-bottom:0}td:nth-child(2){font-weight:600;color:var(--g)}.pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700}.present{background:#dcfce7;color:#166534;box-shadow:0 0 14px rgba(34,197,94,.35)}.absent{background:#fff1e0;color:#9a5412}footer{text-align:center;color:#7a86a3;font-size:12px;padding:0 12px 24px}@media(max-width:600px){h1{font-size:19px}h2{font-size:22px}.panel{padding:18px;border-radius:19px}main{padding:18px 10px 30px}.stats{gap:8px}.stat{padding:12px 10px 12px 14px}.stat strong{font-size:21px}.stat span{font-size:11px}#headDate{padding:6px 10px}.attend button{width:100%;min-width:0}}
+    #splash{position:fixed;inset:0;z-index:999;display:grid;place-items:center;text-align:center;color:#fff;background:radial-gradient(600px 400px at 20% 20%,rgba(var(--glow),.35),transparent 60%),radial-gradient(700px 500px at 85% 85%,rgba(124,92,255,.35),transparent 60%),linear-gradient(135deg,#0a1431,#12214a 50%,#1e3a95);transition:opacity .8s ease,transform .8s var(--ease),visibility .8s}#splash.out{opacity:0;transform:scale(1.06);visibility:hidden;pointer-events:none}#splash .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;pointer-events:none;animation:orbMove 8s ease-in-out infinite alternate}#splash .orb.o1{width:320px;height:320px;background:#3b82f6;left:8%;top:12%}#splash .orb.o2{width:360px;height:360px;background:#7c5cff;right:6%;bottom:8%;animation-delay:-3s}@keyframes orbMove{from{transform:translate(0,0)}to{transform:translate(40px,-30px)}}.splash-box{position:relative;padding:20px}.splash-logo{width:92px;height:92px;margin:0 auto 26px;display:grid;place-items:center;border-radius:26px;font-size:30px;font-weight:800;letter-spacing:1px;color:#fff;background:linear-gradient(145deg,#3b82f6,#7c5cff);box-shadow:0 0 0 10px rgba(var(--glow),.14),0 18px 50px rgba(var(--glow),.7);animation:splashPop .9s var(--ease) both,logoGlow 2.6s ease-in-out .9s infinite}@keyframes splashPop{from{opacity:0;transform:scale(.3) rotate(-15deg)}to{opacity:1;transform:none}}.splash-small{font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#9fd6ff;animation:fadeUp .8s var(--ease) .35s both}.splash-title{margin:10px 0 12px;font-size:clamp(38px,8vw,68px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;background:linear-gradient(90deg,#fff 0%,#9fd6ff 45%,#c4b5ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;animation:fadeUp .9s var(--ease) .55s both}.splash-sub{font-size:16px;color:#c7d4f5;animation:fadeUp .9s var(--ease) .8s both}.splash-bar{width:190px;height:4px;margin:30px auto 0;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.15);animation:fadeUp .8s var(--ease) 1s both}.splash-bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,#38bdf8,#7c5cff);box-shadow:0 0 14px rgba(var(--glow),.9);animation:barFill 2s ease-in-out 1s forwards}@keyframes barFill{to{width:100%}}@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}body.splash-on{overflow:hidden}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body class="splash-on">
+  <div id="splash" role="status" aria-live="polite">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <div class="splash-box">
+      <div class="splash-logo">11B</div>
+      <div class="splash-small">236-maktab · 11-B sinf</div>
+      <h1 class="splash-title">Xush kelibsiz!</h1>
+      <div class="splash-sub">11-B Davomat tizimiga</div>
+      <div class="splash-bar"><i></i></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="head">
+      <div class="brand">
+        <div class="logo">11B</div>
+        <div>
+          <h1>11-B Davomat</h1>
+          <p>236-maktab · 11-B sinf</p>
+        </div>
+      </div>
+      <div id="headDate" style="font-size:12px;color:#d5e6df"></div>
+    </div>
+  </header>
+
+  <main>
+    <section id="login" class="login panel">
+      <div class="eyebrow">Xush kelibsiz</div>
+      <h2>Tizimga kirish</h2>
+      <p class="sub">Davomatni belgilash yoki sinf holatini ko‘rish uchun tizimga kiring.</p>
+
+      <form id="loginForm">
+        <label for="username">Foydalanuvchi nomi</label>
+        <input id="username" autocomplete="username" placeholder="Foydalanuvchi nomini kiriting" required>
+        <label for="password">Parol</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="Parolni kiriting" required>
+        <button class="full" type="submit">Kirish →</button>
+      </form>
+
+      <div style="text-align:center;margin-top:12px">
+        <button type="button" class="secondary" id="showRegister">Hisob yaratish</button>
+      </div>
+
+      <div id="registerArea" class="hidden" style="margin-top:12px">
+        <form id="registerForm" class="panel" style="padding:14px">
+          <label for="regUsername">Foydalanuvchi nomi</label>
+          <input id="regUsername" placeholder="masalan: oysha01" required>
+          <label for="regPassword">Parol</label>
+          <input id="regPassword" type="password" placeholder="Parol (kamida 6 ta belgidan)" required>
+          <label for="regFullname">To‘liq ism</label>
+          <input id="regFullname" placeholder="Qurbonova Oysha" required>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button type="submit">Ro'yxatdan o'tish</button>
+            <button type="button" class="secondary" id="cancelRegister">Bekor qilish</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="loginError" class="notice error hidden" role="alert"></div>
+    </section>
+
+    <section id="student" class="hidden">
+      <div class="topline">
+        <div class="welcome">
+          <div class="avatar" id="studentAvatar">O</div>
+          <div>
+            <h2 id="studentName" style="margin:0 0 4px"></h2>
+            <div class="muted">11-B sinf o‘quvchisi</div>
+          </div>
+        </div>
+        <button class="secondary" onclick="logout()">Chiqish</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span>Bugungi sana</span><strong id="todayDate" style="font-size:17px"></strong></div>
+        <div class="stat"><span>Davomat holati</span><strong id="myStatus" style="font-size:17px">Belgilanmagan</strong></div>
+        <div class="stat"><span>Belgilangan vaqt</span><strong id="myTime" style="font-size:17px">—</strong></div>
+      </div>
+
+      <div class="attend">
+        <div style="font-size:34px">✓</div>
+        <h3 id="attendTitle">Davomatni belgilang</h3>
+        <p id="attendText">Sinfga kelganingizdan so‘ng quyidagi tugmani bosing. Bugun bir marta belgilash mumkin.</p>
+        <div id="locationStatus" class="location-status" role="status">Maktab joylashuvi tekshirilmoqda...</div>
+        <button id="attendBtn" onclick="markPresent()" disabled>Keldim</button>
+      </div>
+
+      <div class="panel mstats" id="studentStats"></div>
+      <div class="notice">Eslatma: davomat ma’lumotlari shu brauzerda saqlanadi. O‘qituvchi panelidagi natijalar shu qurilmada ko‘rinadi.</div>
+    </section>
+
+    <section id="teacher" class="hidden">
+      <div class="topline">
+        <div class="welcome">
+          <div class="avatar">XM</div>
+          <div>
+            <h2 style="margin:0 0 4px">O‘qituvchi paneli</h2>
+            <div class="muted">Xoshimova Mamlakat · 11-B sinf</div>
+          </div>
+        </div>
+        <button class="secondary" onclick="logout()">Chiqish</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span>Jami o‘quvchi</span><strong id="total">34</strong></div>
+        <div class="stat"><span>Kelgan</span><strong id="presentCount">0</strong></div>
+        <div class="stat"><span>Belgilanmagan</span><strong id="absentCount">34</strong></div>
+      </div>
+
+      <div class="panel">
+        <div class="topline">
+          <div>
+            <h2 style="font-size:19px;margin:0">Sinf davomat jadvali</h2>
+            <div class="muted">Tanlangan sana bo‘yicha holat</div>
+          </div>
+          <button class="secondary" onclick="exportCSV()">CSV yuklab olish</button>
+        </div>
+
+        <div class="toolbar">
+          <div><label for="filterDate">Sanani tanlang</label><input id="filterDate" type="date"></div>
+          <div><label for="filterStatus">Holat</label><select id="filterStatus"><option value="all">Barchasi</option><option value="present">Kelgan</option><option value="absent">Belgilanmagan</option></select></div>
+          <div><label for="search">O‘quvchini izlash</label><input id="search" placeholder="Ism yoki username"></div>
+          <button onclick="renderTeacher()">Filtrlash</button>
+        </div>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>№</th><th>O‘quvchi</th><th>Username</th><th>Holat</th><th>Kelgan vaqti</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="muted" id="resultCount" style="margin-top:12px"></div>
+      </div>
+
+      <div class="panel mstats" id="teacherStats"></div>
+      <div class="notice">Davomat faqat shu qurilma va brauzerda saqlanadi. Brauzer ma’lumotlarini tozalash natijalarni o‘chirishi mumkin.</div>
+    </section>
+  </main>
+
+  <footer>11-B Davomat</footer>
+
+  <script>
+    const students = [
+      ["Qurbonova Oysha","oysha01"],["Abduvaliyeva Muslima","muslima02"],["Azimova Robiya","robiya03"],["Akromova Xadicha","xadicha04"],["Boqijonova Ziyoda","ziyoda05"],["G‘ofurjonov Jamshid","jamshid06"],["Komilov Mahmudjon","mahmudjon07"],["Kochkorbekova Robinisa","robinisa08"],["Lutfullayeva Xalima","xalima09"],["Mahmudxo‘jayev Mo‘minxo‘ja","mominxoja10"],["Mirazizova Dilafruz","dilafruz11"],["Mirazamov Mirsaid","mirsaid12"],["Mirmahmudov Firdavs","firdavs13"],["Muhamadaminov Tohir","tohir14"],["Muhammadjonov Kozim","kozim15"],["Muhammadjonov Oybek","oybek16"],["Muhammadjonov Hojakbar","hojakbar17"],["Po‘latova Ruhshona","ruhshona18"],["Ravshanov Ziyodilla","ziyodilla19"],["Rashidov Abdurahmon","abdurahmon20"],["Rixsiboyeva Mubina","mubina21"],["Riqsiboyeva Robiya","robiya22"],["Ro‘ziboyev Zayniddin","zayniddin23"],["Sadridinova Risolat","risolat24"],["Saidrahmadxo‘jayev Saidmurod","saidmurod25"],["Sirojidinov Saidalo","saidalo26"],["Tohirova Muslima","muslima27"],["O‘rinboyev Ziyodilla","ziyodilla28"],["Xoshimov Bohodir","bohodir29"],["Hikmatullayev Begzod","begzod30"],["Xabibullayeva Muhlisa","muhlisa31"],["Xayrullayev Mahmudxon","mahmudxon32"],["Xasanova Habiba","habiba33"],["Shokirjoniy Abdulaziz","abdulaziz34"]];
+
+    const $ = id => document.getElementById(id);
+    const teacherUser = 'mamlakat_teacher';
+    const teacherPass = '23611B';
+
+    const SCHOOL_LAT = 41.321796033849346;
+    const SCHOOL_LNG = 69.16197585324673;
+    const SCHOOL_RADIUS_METERS = 50;
+    let schoolLocationAllowed = false;
+    let locationWatchId = null;
+    let lastLocation = null;
+    let current = null;
+
+    function distanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000, rad = n => n * Math.PI / 180;
+      const dLat = rad(lat2 - lat1), dLon = rad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLon/2)**2;
+      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function setLocationStatus(message, type='') {
+      const el = $('locationStatus');
+      if (!el) return;
+      el.textContent = message;
+      el.classList.remove('error', 'success');
+      if (type) el.classList.add(type);
+    }
+
+    function checkSchoolLocation(position) {
+      lastLocation = position;
+      schoolLocationAllowed = false;
+      const { latitude, longitude, accuracy } = position.coords;
+      const distance = distanceMeters(latitude, longitude, SCHOOL_LAT, SCHOOL_LNG);
+      const safelyInside = distance + accuracy <= SCHOOL_RADIUS_METERS;
+      if (safelyInside && accuracy <= 30) {
+        schoolLocationAllowed = true;
+        setLocationStatus(`Maktab hududidasiz (${Math.round(distance)} m). GPS aniqligi ±${Math.round(accuracy)} m.`, 'success');
+        if (current && current.role === 'student') renderStudent();
+      } else if (distance > SCHOOL_RADIUS_METERS) {
+        setLocationStatus(`Maktab hududidan tashqaridasiz (${Math.round(distance)} m). “Keldim” tugmasi bloklangan.`, 'error');
+      } else {
+        setLocationStatus(`GPS aniqligi yetarli emas (±${Math.round(accuracy)} m). Aniqroq joylashuvni kuting.`, 'error');
+      }
+      if (current && current.role === 'student') {
+        const alreadyMarked = !!records()[dateKey()]?.[current.username];
+        $('attendBtn').disabled = alreadyMarked || !schoolLocationAllowed;
+      }
+    }
+
+    function startLocationCheck() {
+      schoolLocationAllowed = false;
+      if (!navigator.geolocation) {
+        setLocationStatus('Bu brauzer GPS joylashuvini qo‘llab-quvvatlamaydi.', 'error');
+        $('attendBtn').disabled = true;
+        return;
+      }
+      setLocationStatus('Joylashuv aniqlanmoqda. Brauzerda Location ruxsatini bering...');
+      locationWatchId = navigator.geolocation.watchPosition(
+        checkSchoolLocation,
+        err => {
+          schoolLocationAllowed = false;
+          $('attendBtn').disabled = true;
+          const msg = err.code === 1 ? 'Joylashuv ruxsati berilmadi. Brauzer sozlamalaridan Location ruxsatini yoqing.'
+            : err.code === 2 ? 'GPS joylashuvi aniqlanmadi. Telefonning Location xizmatini yoqing.'
+            : 'GPS olish vaqti tugadi. Qayta urinib ko‘ring.';
+          setLocationStatus(msg, 'error');
+        },
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
+      );
+    }
+
+    function tashkentParts(){
+      const parts = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tashkent',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+      return Object.fromEntries(parts.filter(x => x.type !== 'literal').map(x => [x.type, x.value]));
+    }
+    function dateKey(){ const d = tashkentParts(); return d.year + '-' + d.month + '-' + d.day; }
+    function niceDate(s){ if(!s) return ''; let [y,m,d] = s.split('-'); return d + '.' + m + '.' + y; }
+    function clock(){ const t = tashkentParts(); return t.hour + ':' + t.minute + ':' + t.second; }
+    function records(){
+      try { return JSON.parse(localStorage.getItem('11b_demo_attendance') || '{}'); }
+      catch (e) { return {}; }
+    }
+    function save(r){ localStorage.setItem('11b_demo_attendance', JSON.stringify(r)); }
+    function view(id){ ['login','student','teacher'].forEach(v => $(v).classList.toggle('hidden', v !== id)); }
+    function logout(){
+      current = null;
+      schoolLocationAllowed = false;
+      if (locationWatchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(locationWatchId);
+        locationWatchId = null;
+      }
+      $('password').value = '';
+      view('login');
+    }
+
+    $('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      let u = $('username').value.trim().toLowerCase();
+      let p = $('password').value;
+      $('loginError').classList.add('hidden');
+
+      if (u === teacherUser && p === teacherPass) {
+        current = { role: 'teacher' };
+        view('teacher');
+        $('filterDate').dataset.manual = '';
+        $('filterDate').value = dateKey();
+        renderTeacher();
+        return;
+      }
+
+      let s = students.find(x => x[1] === u);
+      if (s && p === '1234') {
+        current = { role: 'student', name: s[0], username: s[1] };
+        view('student');
+        renderStudent();
+        startLocationCheck();
+        return;
+      }
+
+      $('loginError').textContent = 'Login yoki parol noto‘g‘ri. Ma’lumotlarni tekshirib qayta urinib ko‘ring.';
+      $('loginError').classList.remove('hidden');
+    });
+
+    document.getElementById('showRegister').addEventListener('click', function(){ document.getElementById('registerArea').classList.toggle('hidden'); });
+    document.getElementById('cancelRegister').addEventListener('click', function(){ document.getElementById('registerArea').classList.add('hidden'); });
+    document.getElementById('registerForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const username = document.getElementById('regUsername').value.trim().toLowerCase();
+      const password = document.getElementById('regPassword').value.trim();
+      const fullname = document.getElementById('regFullname').value.trim();
+      if (!username || !fullname || password.length < 6) { alert('Iltimos, username, to‘liq ism va kamida 6 belgidan iborat parolni kiriting.'); return; }
+      const exists = students.some(student => student[1] === username);
+      if (exists) { alert('Bu username allaqachon band. Boshqa username tanlang.'); return; }
+      students.push([fullname, username]);
+      alert('Muvaffaqiyatli ro‘yxatdan o‘tdingiz! Endi tizimga kiring.');
+      document.getElementById('registerArea').classList.add('hidden');
+      document.getElementById('loginForm').reset();
+    });
+
+    function renderStudent(){
+      if (!current || current.role !== 'student') return;
+      let day = dateKey();
+      let r = records()[day]?.[current.username];
+      document.getElementById('studentName').textContent = current.name;
+      document.getElementById('studentAvatar').textContent = current.name[0];
+      document.getElementById('todayDate').textContent = niceDate(day);
+
+      if (r) {
+        document.getElementById('myStatus').textContent = 'Kelgan';
+        document.getElementById('myStatus').style.color = '#20673a';
+        document.getElementById('myTime').textContent = r.time;
+        document.getElementById('attendTitle').textContent = 'Davomat belgilandi';
+        document.getElementById('attendText').textContent = 'Bugungi kelgan vaqtingiz qayd etildi.';
+        document.getElementById('attendBtn').textContent = 'Bugun belgilangan';
+        document.getElementById('attendBtn').disabled = true;
+      } else {
+        document.getElementById('myStatus').textContent = 'Belgilanmagan';
+        document.getElementById('myStatus').style.color = 'var(--g)';
+        document.getElementById('myTime').textContent = '—';
+        document.getElementById('attendTitle').textContent = 'Davomatni belgilang';
+        document.getElementById('attendText').textContent = 'Sinfga kelganingizdan so‘ng tugmani bosing. Bugun bir marta belgilash mumkin.';
+        document.getElementById('attendBtn').textContent = 'Keldim';
+        document.getElementById('attendBtn').disabled = !schoolLocationAllowed;
+      }
+    }
+
+    function markPresent(){
+      if (!current || current.role !== 'student') return;
+      if (!schoolLocationAllowed) { setLocationStatus('Davomat faqat maktabdan 50 metr ichida belgilanadi.', 'error'); document.getElementById('attendBtn').disabled = true; return; }
+      let day = dateKey();
+      let all = records();
+      if (!all[day]) all[day] = {};
+      if (!all[day][current.username]){ all[day][current.username] = { name: current.name, time: clock() }; save(all); }
+      renderStudent();
+    }
+
+    function renderTeacher(){
+      let day = document.getElementById('filterDate').value || dateKey();
+      let status = document.getElementById('filterStatus').value;
+      let q = document.getElementById('search').value.trim().toLowerCase();
+      let daily = records()[day] || {};
+      let p = students.filter(s => daily[s[1]]).length;
+
+      document.getElementById('total').textContent = students.length;
+      document.getElementById('presentCount').textContent = p;
+      document.getElementById('absentCount').textContent = students.length - p;
+
+      let list = students.filter(s => (
+        status === 'all' ||
+        (status === 'present' && daily[s[1]]) ||
+        (status === 'absent' && !daily[s[1]])
+      ) && (
+        s[0].toLowerCase().includes(q) || s[1].includes(q)
+      ));
+
+      document.getElementById('rows').innerHTML = list.map((s, idx) => {
+        let r = daily[s[1]];
+        return `<tr><td>${idx + 1}</td><td>${esc(s[0])}</td><td>${esc(s[1])}</td><td><span class="pill ${r ? 'present' : 'absent'}">${r ? 'Kelgan' : 'Belgilanmagan'}</span></td><td>${r ? esc(r.time) : '—'}</td></tr>`;
+      }).join('');
+
+      document.getElementById('resultCount').textContent = niceDate(day) + ' · ' + list.length + ' ta o‘quvchi ko‘rsatilmoqda';
+    }
+
+    function esc(s){ if (s === undefined || s === null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' })[c]); }
+
+    function exportCSV(){
+      let day = document.getElementById('filterDate').value || dateKey();
+      let d = records()[day] || {};
+      let data = [['№','O‘quvchi','Username','Sana','Holat','Vaqt']];
+      students.forEach((s, i) => { data.push([i + 1, s[0], s[1], niceDate(day), d[s[1]] ? 'Kelgan' : 'Belgilanmagan', d[s[1]]?.time || '']); });
+      let csv = '\uFEFF' + data.map(row => row.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+      let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); a.download = '11-B_davomat_' + day + '.csv'; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    function updateDateDisplay(){ let d = tashkentParts(); document.getElementById('headDate').textContent = d.day + '.' + d.month + '.' + d.year; if (current && current.role === 'student') renderStudent(); if (current && current.role === 'teacher' && !document.getElementById('filterDate').dataset.manual) { document.getElementById('filterDate').value = dateKey(); renderTeacher(); } }
+    document.getElementById('filterDate').addEventListener('change', () => { document.getElementById('filterDate').dataset.manual = '1'; renderTeacher(); });
+    document.getElementById('filterStatus').addEventListener('change', renderTeacher);
+    document.getElementById('search').addEventListener('input', renderTeacher);
+    updateDateDisplay(); setInterval(updateDateDisplay, 15000);
+
+    (function(){ var sp=document.getElementById('splash'); if(!sp)return; function closeSplash(){ sp.classList.add('out'); document.body.classList.remove('splash-on'); setTimeout(function(){sp.remove()},900); } var t=setTimeout(closeSplash,3200); sp.addEventListener('click',function(){clearTimeout(t);closeSplash()}); })();
+    document.addEventListener('pointerdown',function(e){ var b=e.target.closest('button'); if(!b||b.disabled)return; var r=b.getBoundingClientRect(),s=Math.max(r.width,r.height); var d=document.createElement('span'); d.className='ripple'; d.style.width=d.style.height=s+'px'; d.style.left=(e.clientX-r.left-s/2)+'px'; d.style.top=(e.clientY-r.top-s/2)+'px'; b.appendChild(d); setTimeout(function(){d.remove()},700); });
+  </script>
+</body>
+</html>
